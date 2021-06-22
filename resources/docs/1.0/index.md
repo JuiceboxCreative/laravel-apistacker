@@ -1,0 +1,9 @@
+- ## Get Started
+    - [Overview](/{{route}}/{{version}}/overview)
+    - [Database Seeding](/{{route}}/{{version}}/database-seeding)
+    - [Automated Testing](/{{route}}/{{version}}/automated-testing)
+    - [Authentication](/{{route}}/{{version}}/authentication)
+    - [Access Token](/{{route}}/{{version}}/access-token)
+    - [Postman](/{{route}}/{{version}}/postman)
+- ## Artists
+    - [Overview](/{{route}}/{{version}}/artists)
