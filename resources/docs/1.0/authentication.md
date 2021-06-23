@@ -86,7 +86,7 @@ And in the same file, be sure to add the top level domains we are expecting to c
 
 ```php
 	'allowed_origins' => [
-        '*.wesfarmerscollection.com.au',
+        '*.<live-domain>',
         '*.dev.juicebox.com.au',
         '*.localhost:*'
         '*.robert.box',
@@ -151,7 +151,7 @@ Sanctum needs some special session and domain settings to work for your frontend
 ```env
 SESSION_DRIVER=cookie
 SESSION_DOMAIN=.dev.juicebox.com.au
-SANCTUM_STATEFUL_DOMAINS=wesfarmers-collection-app.dev.juicebox.com.au,wesfarmers-collection-api.dev.juicebox.com.au
+SANCTUM_STATEFUL_DOMAINS=<client-subdomain>.dev.juicebox.com.au,<client-api-subdomain>.dev.juicebox.com.au
 ```
 | Variable                      | Notes |
 | :-                            | :- |
@@ -164,7 +164,7 @@ SANCTUM_STATEFUL_DOMAINS=wesfarmers-collection-app.dev.juicebox.com.au,wesfarmer
 ```env
 SESSION_DRIVER=cookie
 SESSION_DOMAIN=.robert.box
-SANCTUM_STATEFUL_DOMAINS=wesfarmers-collection-app.robert.box:3000,wesfarmers-collection-app.robert.box,wesfarmers-collection-api.robert.box
+SANCTUM_STATEFUL_DOMAINS=<client-subdomain>.robert.box:3000,<client-api-subdomain>.robert.box
 ```
 
 **Example staging environment:**
@@ -172,13 +172,13 @@ SANCTUM_STATEFUL_DOMAINS=wesfarmers-collection-app.robert.box:3000,wesfarmers-co
 ```env
 SESSION_DRIVER=cookie
 SESSION_DOMAIN=.dev.juicebox.com.au
-SANCTUM_STATEFUL_DOMAINS=wesfarmers-collection-app.dev.juicebox.com.au,wesfarmers-collection-api.dev.juicebox.com.au
+SANCTUM_STATEFUL_DOMAINS=<client-subdomain>.dev.juicebox.com.au,<client-api-subdomain>.dev.juicebox.com.au
 ```
 
 **Example live environment:**
 
 ```env
 SESSION_DRIVER=cookie
-SESSION_DOMAIN=.wesfarmerscollection.com.au
-SANCTUM_STATEFUL_DOMAINS=wesfarmerscollection.com.au
+SESSION_DOMAIN=.<live-domain>
+SANCTUM_STATEFUL_DOMAINS=<live-domain>
 ```

@@ -28,15 +28,15 @@ class ApistackerServiceProvider extends ServiceProvider
         $this->publishesToGroups([
             __DIR__ . '/../app/Http/Controllers/SanctumController.php' => app_path('Http/Controllers/SanctumController.php'),
             __DIR__ . '/../app/Http/Middleware/ForceJsonResponse.php' => app_path('Http/Middleware/ForceJsonResponse.php'),
-        ], ['apistacker', 'apistacker-controllers']);
+        ], ['apistacker', 'apistacker:controllers']);
 
         $this->publishesToGroups([
             __DIR__ . '/../resources/docs' => resource_path('docs'),
-        ], ['apistacker', 'apistacker-docs']);
+        ], ['apistacker', 'apistacker:docs']);
 
         $this->publishesToGroups([
             __DIR__ . '/../postman' => base_path('postman'),
-        ], ['apistacker', 'apistacker-postman']);
+        ], ['apistacker', 'apistacker:postman']);
     }
 
     /**

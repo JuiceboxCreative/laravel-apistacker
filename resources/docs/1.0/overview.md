@@ -2,7 +2,7 @@
 
 ---
 
-This area of the documentation will be specific to the API. Further documentation related to the project should be added to [**Nuclino**](https://app.nuclino.com/Juicebox-Creative/Technology-Department/Introduction-adc19075-592c-44e0-9ff8-186687c744a8)
+This area of the documentation will be specific to the API. Further documentation related to the project should be added to [**Nuclino**](https://app.nuclino.com/Juicebox-Creative/Technology-Department/Client-Specific-Documentation-046df820-3cf1-4be9-a779-554f57c09fcf) under the client folder
 
 All available endpoints start with the prefix **/api**
 
