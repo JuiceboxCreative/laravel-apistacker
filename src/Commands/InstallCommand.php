@@ -7,6 +7,8 @@ use Juicebox\Apistacker\ApistackerServiceProvider;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class InstallCommand extends Command
 {
@@ -48,10 +50,10 @@ class InstallCommand extends Command
 
         // Add ForceJsonResponse to Kernel
         $content = File::get(app_path('Http/Kernel.php'));
-        $replacements = ['throttle:api,' => 'throttle:api,' . PHP_EOL . '            \App\Http\Middleware\ForceJsonResponse::class,'];
+        $replacements = ["'throttle:api'," => "'throttle:api'," . PHP_EOL . '            \App\Http\Middleware\ForceJsonResponse::class,'];
         if(stripos($content, 'ForceJsonResponse::class') === false){
             $this->line('Adding ForceJsonResponse to the Http Kernel... 🍪');
-            $content = str_replace(array_keys($replacements), $replacements, $content);
+            $content = str_replace(array_keys($replacements), array_values($replacements), $content);
             File::replace(app_path('Http/Kernel.php'), $content);
         }
 
@@ -75,7 +77,7 @@ class InstallCommand extends Command
                     $process->setWorkingDirectory(base_path())->mustRun();
 
                     if($lib === 'binarytorch/larecipe'){
-                        //$this->warn('We just installed '.$name.', be sure to run:');
+                        // Running via another process as this->call wasn't working after we added from composer.
                         $this->line('Installing '.$name.'... 🍪');
                         $command = 'php artisan larecipe:install';
                         $process = new Process(app()::VERSION[0]>6  ? explode(' ', $command) : $command);
@@ -93,6 +95,8 @@ class InstallCommand extends Command
         foreach($routes as $route){
             $content = File::get(base_path('routes/'.$route));
             if(stripos($content, '::fallback') === false && File::exists(base_path('routes/'.$route)) && File::exists(__DIR__.'/../../routes/'.$route)){
+                $this->line('Updating '.$route.' routes ... 🍪');
+
                 $contents = str_replace(['<?php', '?>'], '', File::get(__DIR__.'/../../routes/'.$route));
                 File::append(base_path('routes/'.$route), PHP_EOL . $contents);
             }
@@ -105,7 +109,22 @@ class InstallCommand extends Command
             '<app-email>' => 'web+apiuser@juicebox.com.au',
             '<app-password>' => Str::random(40)
         ];
+        $user = User::where('email', $replacements['<app-email>'])->first();
 
+        // Create the user
+        if(!$user){
+            User::create([
+                'name' => 'API User',
+                'email' => $replacements['<app-email>'],
+                'password' => Hash::make($replacements['<app-password>']),
+            ]);
+            $this->line('Creating user for the API... 🍪');
+        }else{
+            $user->password = Hash::make($replacements['<app-password>']);
+            $user->save();
+        }
+
+        $this->line('Setting up postman collection/environment... 🍪');
         $files = ['postman_collection.json', 'postman_environment.json'];
         foreach($files as $file){
             if(File::exists(base_path('postman/'.$file))){
