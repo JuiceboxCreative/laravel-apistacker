@@ -14,8 +14,6 @@ class ApistackerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerConfigs();
-
         if ($this->app->runningInConsole()) {
             $this->registerPublishables();
             $this->registerConsoleCommands();
@@ -40,6 +38,17 @@ class ApistackerServiceProvider extends ServiceProvider
             __DIR__ . '/../postman' => base_path('postman'),
         ], ['apistacker', 'apistacker-postman']);
     }
+
+    /**
+     * Register the commands accessible from the Console.
+     */
+    protected function registerConsoleCommands()
+    {
+        $this->commands([
+            InstallCommand::class // fullstacker:install
+        ]);
+    }
+
 
     protected function publishesToGroups(array $paths, $groups = null)
     {

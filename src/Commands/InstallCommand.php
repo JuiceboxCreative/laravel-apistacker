@@ -46,6 +46,15 @@ class InstallCommand extends Command
         // Install publishables
         $this->call('vendor:publish', ['--provider' => ApistackerServiceProvider::class, '--tag' => 'apistacker', '--force']);
 
+        // Add ForceJsonResponse to Kernel
+        $content = File::get(app_path('Http/Kernel.php'));
+        $replacements = ['throttle:api,' => 'throttle:api,' . PHP_EOL . '            \App\Http\Middleware\ForceJsonResponse::class,'];
+        if(stripos($content, 'ForceJsonResponse::class') === false){
+            $this->line('Adding ForceJsonResponse to the Http Kernel... 🍪');
+            $content = str_replace(array_keys($replacements), $replacements, $content);
+            File::replace(app_path('Http/Kernel.php'), $content);
+        }
+
         $composerJson = json_decode(File::get(base_path('composer.json')), true);
         $composerChecks = [
             'LaRecipe Docs' => 'binarytorch/larecipe',
@@ -56,15 +65,25 @@ class InstallCommand extends Command
             if(!array_key_exists($lib, data_get($composerJson, 'require', []))){
                 $this->line('Adding '.$name.' to the install... 🍪');
 
-                $command = $composer.' require '.$lib;
                 $composer = $this->findComposer();
-                $process = new Process(app()::VERSION[0]>6  ? [$command] : $command);
-                $process->setTimeout(null);
-                $process->setWorkingDirectory(base_path())->run();
+                $command = $composer.' require '.$lib;
+                $process = new Process(app()::VERSION[0]>6  ? [$composer, 'require', $lib] : $command);
+                try {
+                    $process->setWorkingDirectory(base_path())->mustRun();
 
-                if($lib === 'binarytorch/larecipe'){
-                    $this->line('Installing '.$name.'... 🍪');
-                    $this->call('larecipe:install');
+                    $process = new Process(app()::VERSION[0]>6  ? [$composer, 'dump-autoload'] : $composer. ' dump-autoload');
+                    $process->setWorkingDirectory(base_path())->mustRun();
+
+                    if($lib === 'binarytorch/larecipe'){
+                        //$this->warn('We just installed '.$name.', be sure to run:');
+                        $this->line('Installing '.$name.'... 🍪');
+                        $command = 'php artisan larecipe:install';
+                        $process = new Process(app()::VERSION[0]>6  ? explode(' ', $command) : $command);
+                        $process->setWorkingDirectory(base_path())->mustRun();
+                    }
+                } catch (ProcessFailedException $exception) {
+                    $this->warn('Unable to install '.$name);
+                    $this->warn($exception->getMessage());
                 }
             }
         }
@@ -80,11 +99,12 @@ class InstallCommand extends Command
         $files = ['postman_collection.json', 'postman_environment.json'];
         foreach($files as $file){
             if(File::exists(base_path('postman/'.$file))){
+                $replacements['<name>'] = $file === 'postman_environment.json' ? config('app.name').' - '.config('app.env') : config('app.name');
+                $newFileName = $file === 'postman_environment.json' ? config('app.name').' - '.config('app.env').'.'.$file : config('app.name').'.'.$file;
                 $contents = str_replace(array_keys($replacements), $replacements, File::get(base_path('postman/'.$file)));
-                File::replace(base_path('postman/'.$file), $contents);
 
-                $newName = $file === 'postman_environment.json' ? config('app.name').' - '.config('app.env').'.'.$file: config('app.name').'.'.$file
-                File::move(base_path('postman/'.$file), base_path('postman/'.$newName))
+                File::replace(base_path('postman/'.$file), $contents);
+                File::move(base_path('postman/'.$file), base_path('postman/'.$newFileName));
             }
         }
 
