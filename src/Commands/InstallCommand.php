@@ -88,6 +88,16 @@ class InstallCommand extends Command
             }
         }
 
+        // Setup routes
+        $routes = ['api.php'];
+        foreach($routes as $route){
+            $content = File::get(base_path('routes/'.$route));
+            if(stripos($content, '::fallback') === false && File::exists(base_path('routes/'.$route)) && File::exists(__DIR__.'/../../routes/'.$route)){
+                $contents = str_replace(['<?php', '?>'], '', File::get(__DIR__.'/../../routes/'.$route));
+                File::append(base_path('routes/'.$route), PHP_EOL . $contents);
+            }
+        }
+
         // Update postman files
         $replacements = [
             '<name>' => config('app.name'),
