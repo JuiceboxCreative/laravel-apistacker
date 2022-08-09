@@ -1,6 +1,7 @@
 {
     "name": "juicebox/apistacker",
     "description": "Juicebox starter pack for an API driven application",
+    "version": "1.0.3",
     "type": "project",
     "autoload": {
         "psr-4": {
