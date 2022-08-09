@@ -71,9 +71,11 @@ class InstallCommand extends Command
                 $command = $composer.' require '.$lib;
                 $process = new Process(app()::VERSION[0]>6  ? [$composer, 'require', $lib] : $command);
                 try {
+                    $process->setTimeout(300);
                     $process->setWorkingDirectory(base_path())->mustRun();
 
                     $process = new Process(app()::VERSION[0]>6  ? [$composer, 'dump-autoload'] : $composer. ' dump-autoload');
+                    $process->setTimeout(300);
                     $process->setWorkingDirectory(base_path())->mustRun();
 
                     if($lib === 'binarytorch/larecipe'){
@@ -81,6 +83,7 @@ class InstallCommand extends Command
                         $this->line('Installing '.$name.'... 🍪');
                         $command = 'php artisan larecipe:install';
                         $process = new Process(app()::VERSION[0]>6  ? explode(' ', $command) : $command);
+                        $process->setTimeout(300);
                         $process->setWorkingDirectory(base_path())->mustRun();
                     }
                 } catch (ProcessFailedException $exception) {
