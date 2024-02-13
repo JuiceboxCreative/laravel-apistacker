@@ -5,5 +5,14 @@
     - [Authentication](/{{route}}/{{version}}/authentication)
     - [Access Token](/{{route}}/{{version}}/access-token)
     - [Postman](/{{route}}/{{version}}/postman)
+- ## Code expectation
+    - [Security Measures](/{{route}}/{{version}}/security)
+    - [Data Retention](/{{route}}/{{version}}/data-retention)
+    - [Languages](/{{route}}/{{version}}/i18n)
+    - [Dates](/{{route}}/{{version}}/dates)
+    - [UUIDs](/{{route}}/{{version}}/uuids)
+    - [Encryt/Decrypt Data](/{{route}}/{{version}}/encryption)
+    - [Searching](/{{route}}/{{version}}/searching)
+    - [Scheduled tasks/queues](/{{route}}/{{version}}/scheduled-tasks-queues)
 - ## Artists
     - [Overview](/{{route}}/{{version}}/artists)

@@ -98,8 +98,8 @@ A successful set of results searching by the letter 'a'
         }
     ],
     "links": {
-        "first": "https://wesfarmers-collection-api.robert.box/api/artists?letter=a&page=1",
-        "last": "https://wesfarmers-collection-api.robert.box/api/artists?letter=a&page=1",
+        "first": "https://<client-api-subdomain>.local.box/api/artists?letter=a&page=1",
+        "last": "https://<client-api-subdomain>.local.box/api/artists?letter=a&page=1",
         "prev": null,
         "next": null
     },
@@ -114,7 +114,7 @@ A successful set of results searching by the letter 'a'
                 "active": false
             },
             {
-                "url": "https://wesfarmers-collection-api.robert.box/api/artists?letter=a&page=1",
+                "url": "https://<client-api-subdomain>.local.box/api/artists?letter=a&page=1",
                 "label": "1",
                 "active": true
             },
@@ -124,7 +124,7 @@ A successful set of results searching by the letter 'a'
                 "active": false
             }
         ],
-        "path": "https://wesfarmers-collection-api.robert.box/api/artists",
+        "path": "https://<client-api-subdomain>.local.box/api/artists",
         "per_page": 25,
         "to": 6,
         "total": 6
@@ -140,8 +140,8 @@ In this example the letter 'x' returned just an empty `data` variable an a `meta
 {
     "data": [],
     "links": {
-        "first": "https://wesfarmers-collection-api.robert.box/api/artists?letter=x&page=1",
-        "last": "https://wesfarmers-collection-api.robert.box/api/artists?letter=x&page=1",
+        "first": "https://<client-api-subdomain>.local.box/api/artists?letter=x&page=1",
+        "last": "https://<client-api-subdomain>.local.box/api/artists?letter=x&page=1",
         "prev": null,
         "next": null
     },
@@ -156,7 +156,7 @@ In this example the letter 'x' returned just an empty `data` variable an a `meta
                 "active": false
             },
             {
-                "url": "https://wesfarmers-collection-api.robert.box/api/artists?letter=x&page=1",
+                "url": "https://<client-api-subdomain>.local.box/api/artists?letter=x&page=1",
                 "label": "1",
                 "active": true
             },
@@ -166,7 +166,7 @@ In this example the letter 'x' returned just an empty `data` variable an a `meta
                 "active": false
             }
         ],
-        "path": "https://wesfarmers-collection-api.robert.box/api/artists",
+        "path": "https://<client-api-subdomain>.local.box/api/artists",
         "per_page": 25,
         "to": null,
         "total": 0

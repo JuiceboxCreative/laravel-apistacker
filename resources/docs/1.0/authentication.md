@@ -2,7 +2,7 @@
 
 ---
 
-We are using Laravel Sanctum [https://laravel.com/docs/8.x/sanctum](https://laravel.com/docs/8.x/sanctum) to provide some protection to the backend API. For API requests via postman or cURL, the majority will need to use an access token via a Bearer token. For the frontend, we will be using CSRF protection via Sanctum and also Bearer token.
+We are using Laravel Sanctum [https://laravel.com/docs/10.x/sanctum](https://laravel.com/docs/10.x/sanctum) to provide some protection to the backend API. For API requests via postman or cURL, the majority will need to use an access token via a Bearer token. For the frontend, we will be using CSRF protection via Sanctum and also Bearer token.
 
 ## Gaining an access token
 
@@ -68,7 +68,7 @@ const response = authApi.post(`${process.env.REACT_APP_BASE_URL}/api/somepostreq
 
 After running this request it will set a cookie for `XSRF-TOKEN` and this token now needs to be sent for subsequent requests as a `X-XSRF-TOKEN` header.
 
-Further documentation can be found [https://laravel.com/docs/8.x/sanctum#spa-authenticating](https://laravel.com/docs/8.x/sanctum#spa-authenticating)
+Further documentation can be found [https://laravel.com/docs/10.x/sanctum#spa-authenticating](https://laravel.com/docs/10.x/sanctum#spa-authenticating)
 
 ## API config/cors.php settings
 
@@ -89,8 +89,8 @@ And in the same file, be sure to add the top level domains we are expecting to c
         '*.<live-domain>',
         '*.dev.juicebox.com.au',
         '*.localhost:*'
-        '*.robert.box',
-        '*.robert.box:*'
+        '*.local.box',
+        '*.local.box:*'
     ],
 ```
 
@@ -163,8 +163,8 @@ SANCTUM_STATEFUL_DOMAINS=<client-subdomain>.dev.juicebox.com.au,<client-api-subd
 
 ```env
 SESSION_DRIVER=cookie
-SESSION_DOMAIN=.robert.box
-SANCTUM_STATEFUL_DOMAINS=<client-subdomain>.robert.box:3000,<client-api-subdomain>.robert.box
+SESSION_DOMAIN=.local.box
+SANCTUM_STATEFUL_DOMAINS=<client-subdomain>.local.box:3000,<client-api-subdomain>.local.box
 ```
 
 **Example staging environment:**

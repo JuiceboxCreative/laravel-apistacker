@@ -47,4 +47,4 @@ A string with the access token should be returned if the email/password combinat
 }
 ```
 
-<larecipe-swagger endpoint="/api/sanctum/token" default-method="post" :default-params="{ 'email': 'web+wesfarmers@juicebox.com.au', 'password': '', 'device_name': 'Docs' }"></larecipe-swagger>
+<larecipe-swagger endpoint="/api/sanctum/token" default-method="post" :default-params="{ 'email': 'web@juicebox.com.au', 'password': '', 'device_name': 'Docs' }"></larecipe-swagger>

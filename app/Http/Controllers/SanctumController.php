@@ -9,7 +9,13 @@ use App\Models\User;
 
 class SanctumController extends Controller
 {
-    public function token (Request $request) {
+    /**
+     * Generate an access token
+     *
+     * @param Request $request
+     */
+    public function token (Request $request): string
+    {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
