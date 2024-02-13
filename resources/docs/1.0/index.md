@@ -4,8 +4,6 @@
     - [Automated Testing](/{{route}}/{{version}}/automated-testing)
     - [Authentication](/{{route}}/{{version}}/authentication)
     - [Access Token](/{{route}}/{{version}}/access-token)
-    - [Dates](/{{route}}/{{version}}/dates)
-    - [Encyption](/{{route}}/{{version}}/dates)
     - [Postman](/{{route}}/{{version}}/postman)
 - ## Code expectation
     - [Security Measures](/{{route}}/{{version}}/security)
