@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class InstallCommand extends Command
 {
@@ -43,6 +44,7 @@ class InstallCommand extends Command
      */
     public function handle()
     {
+        list($laravel_version, $minor, $patch) = explode('.', app()::VERSION);
         $this->line('Publishing assets and configurations... 🍪');
 
         // Install publishables
@@ -69,12 +71,12 @@ class InstallCommand extends Command
 
                 $composer = $this->findComposer();
                 $command = $composer.' require '.$lib;
-                $process = new Process(app()::VERSION[0]>6  ? [$composer, 'require', $lib] : $command);
+                $process = new Process($laravel_version>6  ? [$composer, 'require', $lib] : $command);
                 try {
                     $process->setTimeout(300);
                     $process->setWorkingDirectory(base_path())->mustRun();
 
-                    $process = new Process(app()::VERSION[0]>6  ? [$composer, 'dump-autoload'] : $composer. ' dump-autoload');
+                    $process = new Process($laravel_version>6  ? [$composer, 'dump-autoload'] : $composer. ' dump-autoload');
                     $process->setTimeout(300);
                     $process->setWorkingDirectory(base_path())->mustRun();
 
@@ -82,7 +84,7 @@ class InstallCommand extends Command
                         // Running via another process as this->call wasn't working after we added from composer.
                         $this->line('Installing '.$name.'... 🍪');
                         $command = 'php artisan larecipe:install';
-                        $process = new Process(app()::VERSION[0]>6  ? explode(' ', $command) : $command);
+                        $process = new Process($laravel_version>6  ? explode(' ', $command) : $command);
                         $process->setTimeout(300);
                         $process->setWorkingDirectory(base_path())->mustRun();
                     }
