@@ -1,0 +1,9 @@
+        $middleware->api(prepend: [
+            ForceJsonResponse::class,
+        ]);
+
+        $middleware->redirectGuestsTo(function (Request $request) {
+            return $request->wantsJson() || $request->is('api/*')
+                ? response()->json(['message' => 'Unauthorized.'], 401)
+                : route('login');
+        });

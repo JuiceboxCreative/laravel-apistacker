@@ -1,0 +1,37 @@
+        $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {
+            return $request->wantsJson() || $request->is('api/*');
+        });
+
+        $exceptions->render(function (Exception $exception, Request $request) {
+            $expectsJson = $request->wantsJson() || $request->is('api/*');
+
+            // 401 Unauthorized
+            if ($exception instanceof AuthenticationException) {
+                if($expectsJson) {
+                    return response()->json(['message' => $exception->getMessage()], 401);
+                }
+            }
+
+            // 404 Not Found
+            if ($exception instanceof ModelNotFoundException && App::environment(['production'])) {
+                if($expectsJson) {
+                    return response()->json(['message' => 'Sorry, we unable to process this request'], 404);
+                }
+            }
+
+            // 500 Internal Server Error
+            if ($exception instanceof HttpExceptionInterface) {
+                if($expectsJson){
+                    $code = ! empty($exception->getCode()) ? $exception->getCode() : $exception->getStatusCode();
+                    $message = config('app.debug') ? $exception->getMessage() : 'Sorry, we unable to process this request';
+                    return response()->json(['success' => false, 'message' => $message], $code);
+                }
+            }
+
+            // 419 Token Mismatch
+            if ($exception instanceof TokenMismatchException) {
+                if($expectsJson){
+                    return response()->json(['message' => $exception->getMessage()], 419);
+                }
+            }
+        });

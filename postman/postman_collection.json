@@ -1,6 +1,5 @@
 {
 	"info": {
-		"_postman_id": "06db0c03-fe00-43d6-b284-2f12d9a4f020",
 		"name": "<name>",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -12,7 +11,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.environment.set(\"access_token\", pm.response.text());"
+							"if(pm.response.status == 'OK'){ pm.environment.set(\"access_token\", pm.response.text()); }"
 						],
 						"type": "text/javascript"
 					}
@@ -35,7 +34,7 @@
 						{
 							"key": "password",
 							"value": "{{app_password}}",
-							"type": "text"
+							"type": "secret"
 						},
 						{
 							"key": "device_name",

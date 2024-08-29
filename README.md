@@ -5,8 +5,10 @@ An API starter pack for Laravel & Sanctum
 
 **Requirements:**
 
-* [Laravel 8](https://laravel.com/docs)
-* [Laravel Sanctum](https://laravel.com/docs/8.x/sanctum)
+* [Laravel 11](https://laravel.com/docs)
+* [Laravel Sanctum](https://laravel.com/docs/11.x/sanctum)
+
+For earlier than Laravel 11 you may need to go back to `^1.3.0`.
 
 ### Install the package
 

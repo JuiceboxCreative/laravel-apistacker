@@ -45,18 +45,66 @@ class InstallCommand extends Command
     public function handle()
     {
         list($laravel_version, $minor, $patch) = explode('.', app()::VERSION);
+
+        if($laravel_version >= 11){
+            $this->line('Installing Laravel api starter kit... 🍪');
+            $this->call('install:api', ['--without-migration-prompt' => true, '-n' => true]);
+
+            $this->line('Publishing CORS configuration (CJ\'s favourite)... 🍪');
+            $this->call('config:publish', ['name' => 'cors']);
+
+
+        }
         $this->line('Publishing assets and configurations... 🍪');
+
+        if(File::exists(base_path('config/cors.php'))){
+            $this->line('Enabling supports_credentials in CORS... 🍪');
+            $content = File::get(base_path('config/cors.php'));
+            $replacements = [
+                "'supports_credentials' => false" => "'supports_credentials' => true",
+            ];
+            $content = str_replace(array_keys($replacements), array_values($replacements), $content);
+            File::replace(base_path('config/cors.php'), $content);
+        }
 
         // Install publishables
         $this->call('vendor:publish', ['--provider' => ApistackerServiceProvider::class, '--tag' => 'apistacker', '--force']);
 
         // Add ForceJsonResponse to Kernel
-        $content = File::get(app_path('Http/Kernel.php'));
-        $replacements = ["'throttle:api'," => "'throttle:api'," . PHP_EOL . '            \App\Http\Middleware\ForceJsonResponse::class,'];
-        if(stripos($content, 'ForceJsonResponse::class') === false){
-            $this->line('Adding ForceJsonResponse to the Http Kernel... 🍪');
-            $content = str_replace(array_keys($replacements), array_values($replacements), $content);
-            File::replace(app_path('Http/Kernel.php'), $content);
+        if(File::exists(app_path('Http/Kernel.php'))){
+            $content = File::get(app_path('Http/Kernel.php'));
+            $replacements = ["'throttle:api'," => "'throttle:api'," . PHP_EOL . '            \App\Http\Middleware\ForceJsonResponse::class,'];
+            if(stripos($content, 'ForceJsonResponse::class') === false){
+                $this->line('Adding ForceJsonResponse to the Http Kernel... 🍪');
+                $content = str_replace(array_keys($replacements), array_values($replacements), $content);
+                File::replace(app_path('Http/Kernel.php'), $content);
+            }
+        }
+        if(File::exists(base_path('bootstrap/app.php'))){
+            $content = File::get(base_path('bootstrap/app.php'));
+
+            $uses = $this->getSnippet('bootstrap_app_uses');
+            $apiMiddleware = $this->getSnippet('bootstrap_app_middleware');
+            $apiExeptions = $this->getSnippet('bootstrap_app_exceptions');
+
+            if(stripos($content, 'ForceJsonResponse::class') === false){
+                $this->line('Adding ForceJsonResponse to the Application middleware... 🍪');
+                $replacements = [
+                    'use Illuminate\Foundation\Application;' => 'use Illuminate\Foundation\Application;' . PHP_EOL . $uses,
+                    'function (Middleware $middleware) {' => 'function (Middleware $middleware) {' . PHP_EOL . $apiMiddleware,
+                ];
+                $content = str_replace(array_keys($replacements), array_values($replacements), $content);
+                File::replace(base_path('bootstrap/app.php'), $content);
+            }
+
+            if(stripos($content, 'instanceof AuthenticationException') === false){
+                $this->line('Adding API Exceptions to the Application... 🍪');
+                $replacements = [
+                    'function (Exceptions $exceptions) {' => 'function (Exceptions $exceptions) {' . PHP_EOL . $apiExeptions,
+                ];
+                $content = str_replace(array_keys($replacements), array_values($replacements), $content);
+                File::replace(base_path('bootstrap/app.php'), $content);
+            }
         }
 
         $composerJson = json_decode(File::get(base_path('composer.json')), true);
@@ -159,5 +207,17 @@ class InstallCommand extends Command
         }
 
         return 'composer';
+    }
+
+    /**
+     * Get code snippet from file
+     *
+     * @param string $name
+     * @return string|null
+     */
+    protected function getSnippet(string $name): ?string
+    {
+        $path = __DIR__.'/../Snippets/'.$name.'.snippet';
+        return File::exists($path) ? File::get($path) : null;
     }
 }
