@@ -31,6 +31,10 @@ class ApistackerServiceProvider extends ServiceProvider
         ], ['apistacker', 'apistacker:controllers']);
 
         $this->publishesToGroups([
+            __DIR__ . '/../app/Http/Models/Traits/HasApiResource.php' => app_path('Models/Traits/HasApiResource.php')
+        ], ['apistacker', 'apistacker:traits']);
+
+        $this->publishesToGroups([
             __DIR__ . '/../resources/docs' => resource_path('docs'),
         ], ['apistacker', 'apistacker:docs']);
 

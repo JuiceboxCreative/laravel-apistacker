@@ -52,8 +52,7 @@ class InstallCommand extends Command
 
             $this->line('Publishing CORS configuration (CJ\'s favourite)... 🍪');
             $this->call('config:publish', ['name' => 'cors']);
-
-
+            
         }
         $this->line('Publishing assets and configurations... 🍪');
 
