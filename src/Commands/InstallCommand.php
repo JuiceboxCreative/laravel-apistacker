@@ -42,7 +42,7 @@ class InstallCommand extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         list($laravel_version, $minor, $patch) = explode('.', app()::VERSION);
 
@@ -71,40 +71,68 @@ class InstallCommand extends Command
         $this->call('vendor:publish', ['--provider' => ApistackerServiceProvider::class, '--tag' => 'apistacker', '--force']);
 
         // Add ForceJsonResponse to Kernel
-        if(File::exists(app_path('Http/Kernel.php'))){
+        if ((int) app()::VERSION < 11 && File::exists(app_path('Http/Kernel.php'))) {
+            $this->line('Detected Laravel 10 or below, modifying Http Kernel... 🍪');
             $content = File::get(app_path('Http/Kernel.php'));
-            $replacements = ["'throttle:api'," => "'throttle:api'," . PHP_EOL . '            \App\Http\Middleware\ForceJsonResponse::class,'];
-            if(stripos($content, 'ForceJsonResponse::class') === false){
+
+            $replacements = [
+                "'throttle:api'," => "'throttle:api'," . PHP_EOL . '            \App\Http\Middleware\ForceJsonResponse::class,',
+            ];
+
+            if (stripos($content, 'ForceJsonResponse::class') === false) {
                 $this->line('Adding ForceJsonResponse to the Http Kernel... 🍪');
                 $content = str_replace(array_keys($replacements), array_values($replacements), $content);
                 File::replace(app_path('Http/Kernel.php'), $content);
             }
+        } else {
+            $this->line('Laravel 11+ detected, skipping Kernel.php modification... ✅');
         }
-        if(File::exists(base_path('bootstrap/app.php'))){
-            $content = File::get(base_path('bootstrap/app.php'));
+
+        if (File::exists(base_path('bootstrap/app.php'))) {
+            $appPath = base_path('bootstrap/app.php');
+            $content = File::get($appPath);
 
             $uses = $this->getSnippet('bootstrap_app_uses');
             $apiMiddleware = $this->getSnippet('bootstrap_app_middleware');
-            $apiExeptions = $this->getSnippet('bootstrap_app_exceptions');
+            $apiExceptions = $this->getSnippet('bootstrap_app_exceptions');
 
-            if(stripos($content, 'ForceJsonResponse::class') === false){
-                $this->line('Adding ForceJsonResponse to the Application middleware... 🍪');
-                $replacements = [
-                    'use Illuminate\Foundation\Application;' => 'use Illuminate\Foundation\Application;' . PHP_EOL . $uses,
-                    'function (Middleware $middleware) {' => 'function (Middleware $middleware) {' . PHP_EOL . $apiMiddleware,
-                ];
-                $content = str_replace(array_keys($replacements), array_values($replacements), $content);
-                File::replace(base_path('bootstrap/app.php'), $content);
+            // Only append 'use' statements if not already imported
+            if ($uses && stripos($content, trim($uses)) === false) {
+                $this->line('Injecting use statement... 🍪');
+                $content = str_replace(
+                    'use Illuminate\Foundation\Application;',
+                    'use Illuminate\Foundation\Application;' . PHP_EOL . $uses,
+                    $content
+                );
+            } else {
+                $this->line('Use statement already exists, skipping... ✅');
             }
 
-            if(stripos($content, 'instanceof AuthenticationException') === false){
-                $this->line('Adding API Exceptions to the Application... 🍪');
-                $replacements = [
-                    'function (Exceptions $exceptions) {' => 'function (Exceptions $exceptions) {' . PHP_EOL . $apiExeptions,
-                ];
-                $content = str_replace(array_keys($replacements), array_values($replacements), $content);
-                File::replace(base_path('bootstrap/app.php'), $content);
+            // Only add middleware registration if it's missing
+            if ($apiMiddleware && stripos($content, trim($apiMiddleware)) === false) {
+                $this->line('Injecting ForceJsonResponse middleware... 🍪');
+                $content = Str::replace(
+                    '// apistacker:middleware-placeholder',
+                    '        // apistacker:middleware-placeholder' . PHP_EOL . $apiMiddleware,
+                    $content
+                );
+            } else {
+                $this->line('ForceJsonResponse already registered, skipping... ✅');
             }
+
+            // Only add exceptions handler if it's missing
+            if ($apiExceptions && stripos($content, trim($apiExceptions)) === false) {
+                $this->line('Injecting exception handler... 🍪');
+                $content = Str::replace(
+                    '// apistacker:exception-placeholder',
+                    '        // apistacker:exception-placeholder' . PHP_EOL . $apiExceptions,
+                    $content
+                );
+            } else {
+                $this->line('Exception handler already registered, skipping... ✅');
+            }
+
+            File::replace($appPath, $content);
         }
 
         $composerJson = json_decode(File::get(base_path('composer.json')), true);
@@ -192,7 +220,7 @@ class InstallCommand extends Command
 
         $this->info('All done! Go build all the things 😍');
 
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
@@ -200,13 +228,12 @@ class InstallCommand extends Command
      *
      * @return string
      */
-    protected function findComposer()
+    protected function findComposer(): string
     {
-        if (file_exists(getcwd().'/composer.phar')) {
-            return '"'.PHP_BINARY.'" '.getcwd().'/composer.phar';
-        }
-
-        return 'composer';
+        $composerPath = getcwd() . '/composer.phar';
+        return file_exists($composerPath)
+            ? '"' . PHP_BINARY . '" ' . $composerPath
+            : 'composer';
     }
 
     /**
