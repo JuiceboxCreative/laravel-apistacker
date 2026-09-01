@@ -1,0 +1,59 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# CI
+#
+# Repo-local pull-request gate. This repo is PUBLIC, and GitHub does not allow
+# a public repo to call a reusable workflow that lives in a private repo — so
+# the org-standard review caller (.github/workflows/review.yml) failed at
+# workflow-parse time ("workflow was not found") and produced no check runs at
+# all. Without any check on a PR, merges fail the Vanta ISO 27001 control
+# "GitHub code changes has automated checks enabled".
+#
+# This workflow is the native replacement. The `lint` job syntax-checks every
+# tracked PHP file (php is preinstalled on GitHub-hosted ubuntu runners) and
+# passes cleanly when the repo has no PHP. No third-party Actions beyond
+# first-party actions/checkout — deliberate, to keep the supply-chain surface
+# minimal.
+#
+# `lint` runs UNCONDITIONALLY on every PR (no path filter, no job-level `if:`)
+# so it can be wired as a required status check without ever getting stuck
+# "Expected" and blocking a merge.
+# ──────────────────────────────────────────────────────────────────────────────
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: PHP syntax lint
+        run: |
+          set -uo pipefail
+          mapfile -t files < <(git ls-files '*.php')
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No PHP files to lint — nothing to do."
+            exit 0
+          fi
+          echo "Linting ${#files[@]} PHP file(s)..."
+          fail=0
+          for f in "${files[@]}"; do
+            if ! php -l "$f" > /dev/null; then
+              fail=1
+            fi
+          done
+          if [ "$fail" -ne 0 ]; then
+            echo "PHP syntax errors found."
+            exit 1
+          fi
+          echo "All PHP files pass."
