@@ -89,20 +89,35 @@ class InstallCommand extends Command
 
             if(stripos($content, 'ForceJsonResponse::class') === false){
                 $this->line('Adding ForceJsonResponse to the Application middleware... 🍪');
-                $replacements = [
-                    'use Illuminate\Foundation\Application;' => 'use Illuminate\Foundation\Application;' . PHP_EOL . $uses,
-                    'function (Middleware $middleware) {' => 'function (Middleware $middleware) {' . PHP_EOL . $apiMiddleware,
-                ];
-                $content = str_replace(array_keys($replacements), array_values($replacements), $content);
+                // Skip imports the skeleton already has, a duplicate use statement is a fatal error
+                $newUses = collect(preg_split('/\R/', trim($uses)))
+                    ->filter(fn ($line) => $line !== '' && !str_contains($content, $line))
+                    ->implode(PHP_EOL);
+
+                if($newUses !== ''){
+                    $content = str_replace(
+                        'use Illuminate\Foundation\Application;',
+                        'use Illuminate\Foundation\Application;' . PHP_EOL . $newUses,
+                        $content
+                    );
+                }
+
+                // Laravel 11 closures have no return type, Laravel 12 and 13 use ": void"
+                $content = preg_replace_callback(
+                    '/function \(Middleware \$middleware\)(: void)? \{/',
+                    fn ($matches) => $matches[0] . PHP_EOL . $apiMiddleware,
+                    $content
+                );
                 File::replace(base_path('bootstrap/app.php'), $content);
             }
 
             if(stripos($content, 'instanceof AuthenticationException') === false){
                 $this->line('Adding API Exceptions to the Application... 🍪');
-                $replacements = [
-                    'function (Exceptions $exceptions) {' => 'function (Exceptions $exceptions) {' . PHP_EOL . $apiExeptions,
-                ];
-                $content = str_replace(array_keys($replacements), array_values($replacements), $content);
+                $content = preg_replace_callback(
+                    '/function \(Exceptions \$exceptions\)(: void)? \{/',
+                    fn ($matches) => $matches[0] . PHP_EOL . $apiExeptions,
+                    $content
+                );
                 File::replace(base_path('bootstrap/app.php'), $content);
             }
         }
