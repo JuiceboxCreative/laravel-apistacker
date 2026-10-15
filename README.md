@@ -15,7 +15,7 @@ For earlier than Laravel 11 you may need to go back to `^1.3.0`.
 To get started, please include the repository VCS reference and then require the
 
 ```bash
-composer config repositories.apistacker vcs git@bitbucket.org:JuiceBoxCreative/laravel-apistacker.git
+composer config repositories.apistacker vcs git@github.com:JuiceboxCreative/laravel-apistacker.git
 composer require juicebox/apistacker --dev
 ```
 
@@ -44,3 +44,8 @@ php artisan vendor:publish --tag=apistacker:postman
 php artisan vendor:publish --tag=apistacker:controllers
 php artisan vendor:publish --tag=apistacker:docs
 ```
+
+## Security alerts
+
+This package is a library. It declares a wide `laravel/framework` range and ships no `composer.lock`, so Dependabot alerts against `laravel/framework` describe the lowest version the range allows, not the version that runs. The consuming application resolves the framework version in its own lockfile and is where patched versions are applied. We dismiss these alerts as inaccurate and keep the range so older Laravel versions stay supported.
+

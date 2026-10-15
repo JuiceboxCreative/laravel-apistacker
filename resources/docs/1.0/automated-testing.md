@@ -23,7 +23,7 @@ We expect tests to be written for high risk or business critical functionality. 
 
 ### Get setup for automated tests on push
 
-If you haven't already, please install the [juicebox/automatedpush](https://bitbucket.org/JuiceBoxCreative/laravel-automatedpush/src/master/) package. 
+If you haven't already, please install the [juicebox/automatedpush](https://github.com/JuiceboxCreative/laravel-automatedpush) package. 
 
 Using the package `juicebox/automatedpush` we pre-installed for this repository:
 
