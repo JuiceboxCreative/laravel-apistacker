@@ -10,8 +10,8 @@ Backend development will be aided by setting up the endpoints in a Postman colle
 ## Getting started
 
 - Download Postman - [https://www.postman.com/downloads/](https://www.postman.com/downloads/)
-- Import the collection (Found in `postman/<name>.postman_collection.json` in the BitBucket repository)
-- Import the environment (Found in `postman/<name> - local.postman_environment.json` in the BitBucket repository)
+- Import the collection (Found in `postman/<name>.postman_collection.json` in the GitHub repository)
+- Import the environment (Found in `postman/<name> - local.postman_environment.json` in the GitHub repository)
   - Be sure to replace references to your `.box`
 
 <larecipe-card shadow>

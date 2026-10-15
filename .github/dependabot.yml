@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    ignore:
+      # This is a library: composer.json declares a wide compatibility range
+      # (Laravel 10–13) and intentionally ships no composer.lock. Security
+      # advisories against laravel/framework apply to the version a *consuming
+      # application* resolves in its own lockfile, not to this package. We
+      # cannot narrow the constraint without dropping framework support, so
+      # framework CVE alerts here are non-actionable noise.
+      - dependency-name: "laravel/framework"
